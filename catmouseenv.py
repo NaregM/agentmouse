@@ -6,6 +6,10 @@ from typing import List, Dict, Tuple, Optional
 from gamegraph import GameGraph
 from models import Cat, Mouse
 
+# ------------------------------------------------------------------------
+# ------------------------------------------------------------------------
+# ------------------------------------------------------------------------
+
 class CatMouseEnv:
     """
     
@@ -53,4 +57,38 @@ class CatMouseEnv:
     def step(self, mouse_action: int) -> Tuple[npt.NDArray, float, bool]:
         """
         """
-        return None        
+        if mouse_action not in self.graph[self.mouse.position]:
+            raise ValueError("Invalid action: not a neighbor of mouse!")
+        
+        # Mouse moves first
+        self.mouse.position = mouse_action
+        
+        # Cat moves next (random policy for now)
+        cat_moves = self.graph[self.cat.position]  # Available moves to cat
+        self.cat.position = np.random.choice(cat_moves)
+        
+        self.steps += 1 # Game has a max allowed moves
+        
+        if self.cat.position == self.mouse.position:
+            
+            return self._get_state(), -1, True # Mouse loses
+        
+        elif self.steps >= self.max_steps:
+            
+            return self._get_state(), 1, True  # Mouse survives after max_steps moves
+        
+        else:
+            
+            return self._get_state(), -0.01, False # small step penalty, game continues
+        
+    def available_mouse_actions(self) -> List[int]:
+        """
+        """
+        return self.graph[self.mouse.position]
+    
+    def render(self):
+        """
+        """
+        print(f"Mouse position: {self.mouse.position}, Cat position: {self.cat.position}")
+        
+        
