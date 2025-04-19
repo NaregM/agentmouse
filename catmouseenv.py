@@ -4,6 +4,7 @@ import numpy.typing as npt
 from typing import List, Dict, Tuple, Optional
 
 from gamegraph import GameGraph
+from models import Cat, Mouse
 
 class CatMouseEnv:
     """
