@@ -39,5 +39,18 @@ class CatMouseEnv:
         return self._get_state()
     
     def _get_state(self) -> npt.NDArray:
+        """
+        """
+        cat_vec = np.zeros(len(self.nodes))
+        mouse_vec = np.zeros(len(self.nodes))
         
-        return
+        # Update the value where cat/mouse is currently located
+        cat_vec[self.cat.position] = 1
+        mouse_vec[self.mouse.position] = 1
+        
+        vec_combined = np.concatenate([mouse_vec, cat_vec])
+        
+    def step(self, mouse_action: int) -> Tuple[npt.NDArray, float, bool]:
+        """
+        """
+        return None        
