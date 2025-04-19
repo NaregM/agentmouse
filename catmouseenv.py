@@ -6,6 +6,8 @@ from typing import List, Dict, Tuple, Optional
 from gamegraph import GameGraph
 from models import Cat, Mouse
 
+from config import MAX_MOVES, MODE, REWARD_CAUGHT, REWARD_SURVIVED, STEP_PENALTY
+
 # ------------------------------------------------------------------------
 # ------------------------------------------------------------------------
 # ------------------------------------------------------------------------
@@ -14,7 +16,7 @@ class CatMouseEnv:
     """
     
     """
-    def __init__(self, mode: str = "static", max_steps: int = 15) -> None:
+    def __init__(self, mode: str = MODE, max_steps: int = MAX_MOVES) -> None:
         
         self.graph = GameGraph()
         self.nodes = list(self.graph.keys())
@@ -71,15 +73,15 @@ class CatMouseEnv:
         
         if self.cat.position == self.mouse.position:
             
-            return self._get_state(), -1, True # Mouse loses
+            return self._get_state(), REWARD_CAUGHT, True # Mouse loses
         
         elif self.steps >= self.max_steps:
             
-            return self._get_state(), 1, True  # Mouse survives after max_steps moves
+            return self._get_state(), REWARD_SURVIVED, True  # Mouse survives after max_steps moves
         
         else:
             
-            return self._get_state(), -0.01, False # small step penalty, game continues
+            return self._get_state(), STEP_PENALTY, False # small step penalty, game continues
         
     def available_mouse_actions(self) -> List[int]:
         """
