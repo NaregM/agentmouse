@@ -1,10 +1,10 @@
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, Optional
 from pydantic import BaseModel
 
 class Cat(BaseModel):
     position: int
-    name: str
+    name: Optional[str] = None
 
 class Mouse(BaseModel):
     position: int
-    name: str
+    name: Optional[str] = None
