@@ -2,11 +2,17 @@ import numpy as np
 from typing import Dict
 import torch
 
+from datetime import datetime
+
 from collections import deque
 from tqdm import tqdm
 
 from catmouseenv import CatMouseEnv
 from dqn import build_model, build_optimizer
+
+# ----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 def train_agent(config: Dict):
     """
@@ -73,7 +79,40 @@ def train_agent(config: Dict):
             if len(replay_buffer) >= batch_size:
                 
                 mini_batch = np.random.sample(replay_buffer, batch_size)
-            
-
+                
+                states, actions, rewards, next_steps, dones = zip(*mini_batch)
+                
+                states = torch.cat(states)
+                actions = torch.tensor(actions, dtype=torch.long)
+                rewards = torch.tensor(rewards, dtype=torch.float)
+                next_states = torch.cat(next_states)
+                dones = torch.tensor(dones, dtype=torch.float)
+                
+                # Extract predicted Q-values for taken actions 
+                qvals = model(states).gather(1, actions.unsqueeze(1)).squeeze()
+                
+                with torch.no_grad():
+                    
+                    next_qvals = target_network(next_state).max(dim=1)[0]
+                    targets = rewards + gamma * (1-dones) * next_qvals
+                    
+                loss = loss_fn(qvals, targets)
+                
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
+                losses.append(loss.item())
+                
+                if j % sync_freq == 0:
+                    # Copy weights from model to target model (for stable Q-learning)
+                    target_network.load_state_dict(model.state_dict())
+                    
+        epsilon = max(epsilon_end, epsilon_start * epsilon_decay)
+        if epoch % 500 == 0:
+            print(f"Epoch {epoch}, Role: {role}, Reward: {reward:.2f}, Loss: {loss}")
     
-    return
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = model_path.replace(".pt", f"_{timestamp}.pt")
+    
+    torch.save(model.state_dict(), filename)           
+    print(f"Trained {role}, model saved to {filename}")
