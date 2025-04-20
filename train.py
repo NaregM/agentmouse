@@ -32,7 +32,7 @@ def train_agent(config: Dict):
     optimizer = build_optimizer(model, learning_rate)
     loss_fn = torch.nn.MSELoss()
     
-    replay = deque(maxlen=memory_size)
+    replay_buffer = deque(maxlen=memory_size)
     losses = []
     j = 0  # Used to sync target network every sync_freq steps -> helps stabilize training
     
@@ -45,6 +45,35 @@ def train_agent(config: Dict):
         
         while not done:
             
-            pass
+            j+=1
+            steps+=1
+            
+            # Available actions depend on mouse's current neighbors
+            neighbors = env.available_mouse_actions()
+            action_space = {i: n for i, n in enumerate(neighbors)}
+            
+            # Action selection based on epsilon-greedy logic
+            if np.random.random() < epsilon_start:
+                # Choose by random
+                action_idx = np.random.choice(list(action_space.keys()))
+            else:
+                qvals = model(state)
+                action_idx = torch.argmax(qvals[:, :len(neighbors)]).item()
+                
+            action_node = action_space[action_idx]
+            # Apply chosen action in the env and observe outcome
+            next_state_np, reward, done = env.step(action_node)
+            next_state = torch.from_numpy(next_state_np).float().unsqueeze(0)
+            
+            replay_buffer.append((state, action_idx, reward, next_state, done))
+            state = next_state
+            
+            # Sample a random minibatch from the replay buffer and unpack the 
+            # components for training
+            if len(replay_buffer) >= batch_size:
+                
+                mini_batch = np.random.sample(replay_buffer, batch_size)
+            
+
     
     return
