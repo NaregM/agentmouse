@@ -11,7 +11,8 @@ class DQN(nn.Module):
         super().__init__()
         self.net = nn.Sequential(
             nn.Linear(input_dim, hidden_dims[0]),
-            nn.ReLU(hidden_dims[0], hidden_dims[1]),
+            nn.ReLU(),
+            nn.Linear(hidden_dims[0], hidden_dims[1]),
             nn.ReLU(),
             nn.Linear(hidden_dims[1], output_dim),  # max number of neighbors
         )

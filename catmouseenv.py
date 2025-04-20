@@ -27,10 +27,11 @@ class CatMouseEnv:
     def __init__(self, mode: str = MODE, max_steps: int = MAX_MOVES) -> None:
 
         self.graph = GameGraph()
-        self.nodes = list(self.graph.keys())
+        self.nodes = list(self.graph.adj)
         self.max_steps = max_steps
+        self.mode = MODE
         self.reset()
-
+        
     def reset(self) -> npt.NDArray:
         """ """
         if self.mode == "static":
@@ -65,17 +66,19 @@ class CatMouseEnv:
         mouse_vec[self.mouse.position] = 1
 
         vec_combined = np.concatenate([mouse_vec, cat_vec])
+        
+        return vec_combined
 
     def step(self, mouse_action: int) -> Tuple[npt.NDArray, float, bool]:
         """ """
-        if mouse_action not in self.graph[self.mouse.position]:
+        if mouse_action not in self.graph.adj[self.mouse.position]:
             raise ValueError("Invalid action: not a neighbor of mouse!")
 
         # Mouse moves first
         self.mouse.position = mouse_action
 
         # Cat moves next (random policy for now)
-        cat_moves = self.graph[self.cat.position]  # Available moves to cat
+        cat_moves = self.graph.adj[self.cat.position]  # Available moves to cat
         self.cat.position = np.random.choice(cat_moves)
 
         self.steps += 1  # Game has a max allowed moves
@@ -102,7 +105,7 @@ class CatMouseEnv:
 
     def available_mouse_actions(self) -> List[int]:
         """ """
-        return self.graph[self.mouse.position]
+        return self.graph.adj[self.mouse.position]
 
     def render(self):
         """ """
