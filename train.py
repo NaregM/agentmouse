@@ -26,6 +26,7 @@ def train_agent(config: Dict):
     sync_freq = config.get("sync_freq", 100)
     model_path = config.get("model_path", "model.pt")
     role = config.get("role", "mouse")
+    mode = config.get("mode", "random")
     
     model, target_network = build_model(input_dim, hidden_dims, output_dim)
     optimizer = build_optimizer(model, learning_rate)
@@ -33,10 +34,17 @@ def train_agent(config: Dict):
     
     replay = deque(maxlen=memory_size)
     losses = []
-    j = 0
+    j = 0  # Used to sync target network every sync_freq steps -> helps stabilize training
     
     for epoch in tqdm(range(epochs)):
         
-        pass
+        env = CatMouseEnv(mode=mode)
+        state = torch.from_numpy(env.reset()).float().unsqueeze(0)
+        done = False  # whether the current episode has terminated
+        steps = 0
+        
+        while not done:
+            
+            pass
     
     return
