@@ -1,6 +1,8 @@
 import numpy as np
+import matplotlib.pyplot as plt
 import argparse
 
+from helpers import running_mean
 from train import train_agent
 from config import *
 
@@ -20,8 +22,13 @@ def main():
     config = mouse_config if args.role == "mouse" else cat_config
 
     print(f"Starting training for: {args.role.upper()}")
-    train_agent(config)
+    losses = train_agent(config)
     
+    plt.figure(figsize=(10,7))
+    plt.plot(running_mean(np.array(losses)))
+    plt.xlabel("Epochs",fontsize=22)
+    plt.ylabel("Loss",fontsize=22)
+    plt.show()
 
 
 

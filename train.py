@@ -1,6 +1,6 @@
 import numpy as np
 import random
-from typing import Dict
+from typing import Dict, List
 import torch
 
 from datetime import datetime
@@ -16,7 +16,7 @@ from dqn import build_model, build_optimizer
 # ----------------------------------------------------------------------------
 
 
-def train_agent(config: Dict):
+def train_agent(config: Dict) -> List[float]:
     """
     Trains a DQN agent to play either the mouse or the cat (mouse should always go first?)
     """
@@ -118,3 +118,4 @@ def train_agent(config: Dict):
 
     torch.save(model.state_dict(), filename)
     print(f"Trained {role}, model saved to {filename}")
+    return losses
