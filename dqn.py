@@ -19,6 +19,8 @@ class DQN(nn.Module):
 
     def forward(self, x):
         return self.net(x)
+    
+    
 
 
 def build_model(input_dim, hidden_dims, output_dim):
