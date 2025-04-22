@@ -32,6 +32,7 @@ graph_pos = {
     5: (-0.6, -0.9),
 }
 
+
 def draw_graph(G, cat_pos, mouse_pos):
     plt.clf()
     plt.figure(1, figsize=(6, 4))
@@ -47,10 +48,10 @@ def draw_graph(G, cat_pos, mouse_pos):
         font_size=14,
     )
 
-
-    plt.text(*graph_pos[cat_pos], '🐱', fontsize=24, ha='center', va='center', zorder=3)
-    plt.text(*graph_pos[mouse_pos], '🐭', fontsize=24, ha='center', va='center', zorder=3)
-
+    plt.text(*graph_pos[cat_pos], "🐱", fontsize=24, ha="center", va="center", zorder=3)
+    plt.text(
+        *graph_pos[mouse_pos], "🐭", fontsize=24, ha="center", va="center", zorder=3
+    )
 
     plt.title("Current Game State")
     plt.axis("off")
@@ -61,13 +62,27 @@ def draw_graph(G, cat_pos, mouse_pos):
 
     # Custom legend with emoji symbols
     legend_elements = [
-        Line2D([0], [0], marker='$🐱$', markersize=12,
-               linestyle='None', label='Cat', color = 'k'),
-        Line2D([0], [0], marker='$🐭$', markersize=12,
-               linestyle='None', label='Mouse', color = 'k')
+        Line2D(
+            [0],
+            [0],
+            marker="$🐱$",
+            markersize=15,
+            linestyle="None",
+            label="Cat (you)",
+            color="k",
+        ),
+        Line2D(
+            [0],
+            [0],
+            marker="$🐭$",
+            markersize=15,
+            linestyle="None",
+            label="Mouse",
+            color="k",
+        ),
     ]
 
-    plt.legend(handles=legend_elements, loc='upper left', frameon=False)
+    plt.legend(handles=legend_elements, loc="upper left", frameon=False)
 
 
 def play_game(model_path: str, mode: str = "random", max_moves: int = 10):
